@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Oyuncu Mouse Önerici</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #070b12;
+      color: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: #a5a5a5;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-panel {
+      background: #0d1320;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: #c4c4c4;
+    }
+
+    select,
+    input {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #22283a;
+      background: #050812;
+      color: #f5f5f5;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    select:focus,
+    input:focus {
+      border-color: #4f46e5;
+    }
+
+    .filter-actions {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.45);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 24px rgba(129, 140, 248, 0.65);
+    }
+
+    .btn-secondary {
+      background: #111827;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+    }
+
+    .btn-secondary:hover {
+      opacity: 0.85;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #0b101b;
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.8);
+    }
+
+    .card-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: rgba(79, 70, 229, 0.2);
+      color: #c7d2fe;
+      margin-bottom: 4px;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+    }
+
+    .card p.brand {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .card-body {
+      font-size: 0.8rem;
+      color: #d1d5db;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    .price-row {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .price {
+      font-weight: 600;
+      color: #f97316;
+    }
+
+    .card-footer {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .buy-btn {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #f9fafb;
+      font-weight: 600;
+      flex: 1;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .buy-btn:hover {
+      filter: brightness(1.05);
+    }
+
+    .link-label {
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #9ca3af;
+      margin-top: 20px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      .filter-actions {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Oyuncu Mouse Önerici</h1>
+    <p class="subtitle">Kullanım tipini ve bütçeni seç, gerisini ben hallederim. Listelenen tüm modeller benim önerdiklerim. 🎮</p>
+
+    <!-- FİLTRELER -->
+    <div class="filter-panel">
+      <div class="filter-group">
+        <label for="useType">Kullanım Türü</label>
+        <select id="useType">
+          <option value="">Farketmez</option>
+          <option value="fps">FPS / Rekabetçi</option>
+          <option value="moba">MOBA / MMO</option>
+          <option value="casual">Günlük / Casual</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="connection">Bağlantı</label>
+        <select id="connection">
+          <option value="">Hepsi</option>
+          <option value="kablosuz">Kablosuz</option>
+          <option value="kablolu">Kablolu</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Fiyat Aralığı (TL)</label>
+        <div style="display:flex; gap:6px;">
+          <input id="minPrice" type="number" placeholder="Min" />
+          <input id="maxPrice" type="number" placeholder="Max" />
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-primary" id="filterBtn">Filtrele</button>
+        <button class="btn btn-secondary" id="resetBtn">Sıfırla</button>
+      </div>
+    </div>
+
+    <!-- SONUÇLAR -->
+    <div class="results-header">
+      <span id="resultCount">Toplam 0 sonuç</span>
+      <span>Veriler tamamen benim önerdiğim mouse modelleridir.</span>
+    </div>
+
+    <div id="results" class="results-grid"></div>
+    <div id="noResults" class="no-results" style="display:none;">
+      Bu filtrelere uygun mouse bulamadım. Fiyatı veya kriterleri biraz esnetmeyi deneyebilirsin.
+    </div>
+  </div>
+
+  <script>
+    // ==============================
+    // 1) Mouse Dataset (Bunu SEN dolduracaksın)
+    // ==============================
+    const mouselar = [
+      {
+        id: 1,
+        ad: "Logitech G Pro X Superlight",
+        marka: "Logitech",
+        fiyat: 4200,
+        kullanim: "fps",          // fps | moba | casual
+        baglanti: "kablosuz",     // kablosuz | kablolu
+        dpi: 25600,
+        agırlik: 63,
+        link: "https://www.ornek-link.com/gprox-superlight", // BURAYA GERÇEK SATIN ALMA LİNKİNİ KOY
+        not: "Rekabetçi FPS için hafif ve kablosuz."
+      },
+      {
+        id: 2,
+        ad: "Razer DeathAdder V2",
+        marka: "Razer",
+        fiyat: 2200,
+        kullanim: "fps",
+        baglanti: "kablolu",
+        dpi: 20000,
+        agırlik: 82,
+        link: "https://www.ornek-link.com/deathadder-v2",
+        not: "FPS + genel kullanım için klasik seçim."
+      },
+      {
+        id: 3,
+        ad: "SteelSeries Rival 3",
+        marka: "SteelSeries",
+        fiyat: 1100,
+        kullanim: "casual",
+        baglanti: "kablolu",
+        dpi: 8500,
+        agırlik: 77,
+        link: "https://www.ornek-link.com/rival-3",
+        not: "Bütçe dostu, günlük + hafif oyun."
+      },
+      {
+        id: 4,
+        ad: "Logitech G305 Lightspeed",
+        marka: "Logitech",
+        fiyat: 1600,
+        kullanim: "casual",
+        baglanti: "kablosuz",
+        dpi: 12000,
+        agırlik: 99,
+        link: "https://www.ornek-link.com/g305",
+        not: "Kablosuz, hafif ve uygun fiyatlı."
+      },
+      {
+        id: 5,
+        ad: "Razer Naga X",
+        marka: "Razer",
+        fiyat: 2600,
+        kullanim: "moba",
+        baglanti: "kablolu",
+        dpi: 18000,
+        agırlik: 85,
+        link: "https://www.ornek-link.com/naga-x",
+        not: "MOBA / MMO için çok tuşlu mouse."
+      }
+    ];
+
+    // ==============================
+    // 2) DOM Elemanları
+    // ==============================
+    const useTypeEl = document.getElementById("useType");
+    const connectionEl = document.getElementById("connection");
+    const minPriceEl = document.getElementById("minPrice");
+    const maxPriceEl = document.getElementById("maxPrice");
+    const filterBtn = document.getElementById("filterBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const resultsEl = document.getElementById("results");
+    const resultCountEl = document.getElementById("resultCount");
+    const noResultsEl = document.getElementById("noResults");
+
+    // ==============================
+    // 3) Filtreleme Fonksiyonu
+    // ==============================
+    function filtrele() {
+      const kullanim = useTypeEl.value;      // "" veya "fps" | "moba" | "casual"
+      const baglanti = connectionEl.value;   // "" veya "kablosuz" | "kablolu"
+      const minPrice = Number(minPriceEl.value) || 0;
+      const maxPrice = Number(maxPriceEl.value) || Infinity;
+
+      const sonuc = mouselar.filter((m) => {
+        const kullanimUygun = kullanim ? m.kullanim === kullanim : true;
+        const baglantiUygun = baglanti ? m.baglanti === baglanti : true;
+        const fiyatUygun = m.fiyat >= minPrice && m.fiyat <= maxPrice;
+        return kullanimUygun && baglantiUygun && fiyatUygun;
+      });
+
+      goster(sonuc);
+    }
+
+    // ==============================
+    // 4) Sonuç Gösterme
+    // ==============================
+    function goster(liste) {
+      resultsEl.innerHTML = "";
+
+      if (liste.length === 0) {
+        noResultsEl.style.display = "block";
+        resultCountEl.textContent = "Toplam 0 sonuç";
+        return;
+      }
+
+      noResultsEl.style.display = "none";
+      resultCountEl.textContent = `Toplam ${liste.length} sonuç`;
+
+      liste.forEach((m) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="badge">${etiketCevir(m.kullanim)}</span>
+            <h3>${m.ad}</h3>
+            <p class="brand">${m.marka}</p>
+          </div>
+          <div class="card-body">
+            <div class="tag">DPI: <strong>${m.dpi}</strong></div>
+            <div class="tag">Bağlantı: <strong>${m.baglanti}</strong></div>
+            <div class="tag">Ağırlık: <strong>${m.agırlik} g</strong></div>
+            <div class="tag">Not: <strong>${m.not}</strong></div>
+          </div>
+          <div class="price-row">
+            <span class="price">${m.fiyat.toLocaleString("tr-TR")} TL</span>
+          </div>
+          <div class="card-footer">
+            <a class="buy-btn" href="${m.link}" target="_blank" rel="noopener noreferrer">
+              Satın Al
+            </a>
+            <span class="link-label">Dış siteye yönlendirilirsin</span>
+          </div>
+        `;
+
+        resultsEl.appendChild(card);
+      });
+    }
+
+    // Küçük helper: etiket çevir
+    function etiketCevir(kullanim) {
+      switch (kullanim) {
+        case "fps":
+          return "FPS / Rekabetçi";
+        case "moba":
+          return "MOBA / MMO";
+        case "casual":
+          return "Günlük / Casual";
+        default:
+          return "Genel";
+      }
+    }
+
+    // ==============================
+    // 5) Event Listener
+    // ==============================
+    filterBtn.addEventListener("click", filtrele);
+
+    resetBtn.addEventListener("click", () => {
+      useTypeEl.value = "";
+      connectionEl.value = "";
+      minPriceEl.value = "";
+      maxPriceEl.value = "";
+      goster(mouselar);
+    });
+
+    // Sayfa açıldığında hepsini göster
+    goster(mouselar);
+  </script>
+</body>
+</html>
